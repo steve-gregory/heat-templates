@@ -37,6 +37,7 @@ def main(argv=sys.argv):
         var_name = 'FACTER_%s' % input_name
         variables[var_name] = input.get('value','')
 
+    config_file = os.path.join(WORKING_DIR, 'ansible.cfg')
     fn = os.path.join(WORKING_DIR, '%s_playbook.yaml' % c['id'])
     heat_outputs_path = os.path.join(OUTPUTS_DIR, c['id'])
     variables['heat_outputs_path'] = heat_outputs_path
@@ -54,6 +55,7 @@ def main(argv=sys.argv):
     cmd = ['ansible-playbook', fn]
     log.debug('Running %s %s' % (env_debug, ' '.join(cmd)))
     try:
+        log.debug('Running %s' % cmd)
         subproc = subprocess.Popen([cmd], stdout=subprocess.PIPE,
                                    stderr=subprocess.PIPE, env=env)
     except OSError:
