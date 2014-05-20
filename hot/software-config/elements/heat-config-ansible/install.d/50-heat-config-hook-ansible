@@ -1,0 +1,10 @@
+#!/bin/bash
+set -x
+
+SCRIPTDIR=$(dirname $0)
+
+#Is this necessary?
+#package-install python-dev
+
+pip install ansible
+install -D -g root -o root -m 0755 ${ansibleDIR}/hook-ansible.py /var/lib/heat-config/hooks/ansible
