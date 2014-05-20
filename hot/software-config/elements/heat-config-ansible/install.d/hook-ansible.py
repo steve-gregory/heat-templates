@@ -31,16 +31,23 @@ def main(argv=sys.argv):
 
     c = json.load(sys.stdin)
 
-    env = os.environ.copy()
     variables = {}
     for input in c['inputs']:
         input_name = input['name']
-        variables[input_name] = input.get('value','')
+        var_name = 'FACTER_%s' % input_name
+        variables[var_name] = input.get('value','')
 
     config_file = os.path.join(WORKING_DIR, 'ansible.cfg')
     fn = os.path.join(WORKING_DIR, '%s_playbook.yaml' % c['id'])
     heat_outputs_path = os.path.join(OUTPUTS_DIR, c['id'])
     variables['heat_outputs_path'] = heat_outputs_path
+
+    #Write 'FACTER_*' vars to env, ansible will pick them up!
+    env_debug = ' '.join('%s="%s" ' % (k, v) for k, v in variables.items())
+
+    env = os.environ.copy()
+    env.update(variables)
+
     #Write 'config' to file
     with os.fdopen(os.open(config_file, os.O_CREAT | os.O_WRONLY, 0o700), 'w') as f:
         f.write(c.get('config', ''))
