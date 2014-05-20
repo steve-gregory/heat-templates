@@ -37,16 +37,17 @@ def main(argv=sys.argv):
         input_name = input['name']
         variables[input_name] = input.get('value','')
 
+    config_file = os.path.join(WORKING_DIR, 'ansible.cfg')
     fn = os.path.join(WORKING_DIR, '%s_playbook.yaml' % c['id'])
     heat_outputs_path = os.path.join(OUTPUTS_DIR, c['id'])
     variables['heat_outputs_path'] = heat_outputs_path
-
-    with os.fdopen(os.open(fn, os.O_CREAT | os.O_WRONLY, 0o700), 'w') as f:
-        #TODO: What does this fn do?
+    #Write 'config' to file
+    with os.fdopen(os.open(config_file, os.O_CREAT | os.O_WRONLY, 0o700), 'w') as f:
         f.write(c.get('config', ''))
+
     cmd = ['ansible-playbook', fn]
-    log.debug('Running %s' % cmd)
     try:
+        log.debug('Running %s' % cmd)
         subproc = subprocess.Popen([cmd], stdout=subprocess.PIPE,
                                    stderr=subprocess.PIPE, env=env)
     except OSError:
