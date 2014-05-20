@@ -7,4 +7,4 @@ SCRIPTDIR=$(dirname $0)
 #package-install python-dev
 
 pip install ansible
-install -D -g root -o root -m 0755 ${ansibleDIR}/hook-ansible.py /var/lib/heat-config/hooks/ansible
+install -D -g root -o root -m 0755 ${SCRIPTDIR}/hook-ansible.py /var/lib/heat-config/hooks/ansible
