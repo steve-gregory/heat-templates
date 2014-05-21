@@ -32,7 +32,7 @@ resources:
       outputs:
       - name: result
       config:
-        get_file: "https://mickey.iplantc.org/resources/ansible_data.sh"
+        get_file: config-scripts/example-ansible-template.yaml
 
   deployment:
     type: OS::Heat::SoftwareDeployment
