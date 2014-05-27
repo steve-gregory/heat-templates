@@ -34,7 +34,8 @@ resources:
       config: |
         ---
         - name: Hello Ansible - quick start
-          hosts: myvirtualhost-fedora
+          hosts: localhost
+          connection: local
           remote_user: ec2-user
           sudo: yes
         
