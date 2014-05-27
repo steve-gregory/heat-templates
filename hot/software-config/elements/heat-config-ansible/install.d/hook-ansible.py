@@ -37,24 +37,23 @@ def main(argv=sys.argv):
         var_name = 'FACTER_%s' % input_name
         variables[var_name] = input.get('value','')
 
-    config_file = os.path.join(WORKING_DIR, 'ansible.cfg')
     fn = os.path.join(WORKING_DIR, '%s_playbook.yaml' % c['id'])
     heat_outputs_path = os.path.join(OUTPUTS_DIR, c['id'])
-    variables['heat_outputs_path'] = heat_outputs_path
+    variables['FACTER_heat_outputs_path'] = heat_outputs_path
 
     #Write 'FACTER_*' vars to env, ansible will pick them up!
-    env_debug = ' '.join('%s="%s" ' % (k, v) for k, v in variables.items())
+    env_debug = ' '.join('%s="%s"' % (k, v) for k, v in variables.items())
 
     env = os.environ.copy()
     env.update(variables)
 
     #Write 'config' to file
-    with os.fdopen(os.open(config_file, os.O_CREAT | os.O_WRONLY, 0o700), 'w') as f:
-        f.write(c.get('config', ''))
+    with os.fdopen(os.open(fn, os.O_CREAT | os.O_WRONLY, 0o700), 'w') as f:
+        f.write(c.get('config',''))
 
-    cmd = ['ansible-playbook', fn]
+    cmd = ['ansible-playbook','-i','localhost,', fn]
+    log.debug('Running %s %s' % (env_debug, ' '.join(cmd)))
     try:
-        log.debug('Running %s' % cmd)
         subproc = subprocess.Popen([cmd], stdout=subprocess.PIPE,
                                    stderr=subprocess.PIPE, env=env)
     except OSError:
