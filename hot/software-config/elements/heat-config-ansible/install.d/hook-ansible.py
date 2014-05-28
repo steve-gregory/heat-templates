@@ -74,9 +74,7 @@ def main(argv=sys.argv):
         log.info('Completed %s' % fn)
 
     response = {}
-    #TODO: Write the stdout/stderr to a single JSON file
-    # with all the output values from the execution of 'config'
-    # Then load the single json file here and read it out to populate the response.
+
     for output in c.get('outputs') or []:
         output_name = output['name']
         try:
