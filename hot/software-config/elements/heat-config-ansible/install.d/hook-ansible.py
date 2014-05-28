@@ -33,26 +33,26 @@ def main(argv=sys.argv):
 
     variables = {}
     for input in c['inputs']:
-        input_name = input['name']
-        var_name = 'FACTER_%s' % input_name
-        variables[var_name] = input.get('value','')
+        variables[input['name']] = input.get('value','')
 
     fn = os.path.join(WORKING_DIR, '%s_playbook.yaml' % c['id'])
+    vars_filename = os.path.join(WORKING_DIR, '%s_variables.json' % c['id'])
     heat_outputs_path = os.path.join(OUTPUTS_DIR, c['id'])
-    variables['FACTER_heat_outputs_path'] = heat_outputs_path
-
-    #Write 'FACTER_*' vars to env, ansible will pick them up!
-    env_debug = ' '.join('%s="%s"' % (k, v) for k, v in variables.items())
-
-    env = os.environ.copy()
-    env.update(variables)
-
-    #Write 'config' to file
+    variables['heat_outputs_path'] = heat_outputs_path
+    
+    config_text = c.get('config','')
+    if not config_text:
+        log.warn("No 'config' input found, nothing to do.")
+        return
+    #Write 'variables' to file
+    with os.fdopen(os.open(vars_filename, os.O_CREAT | os.O_WRONLY, 0o700), 'w') as var_file:
+        json.dump(variables, var_file)
+    #Write the executable, 'config', to file
     with os.fdopen(os.open(fn, os.O_CREAT | os.O_WRONLY, 0o700), 'w') as f:
         f.write(c.get('config',''))
 
-    cmd = ['ansible-playbook','-i','localhost,', fn]
-    log.debug('Running %s %s' % (env_debug, ' '.join(cmd)))
+    cmd = ['ansible-playbook','-i','localhost,', fn, '--extra-vars','@%s' % vars_filename]
+    log.debug('Running %s' % (' '.join(cmd),))
     try:
         subproc = subprocess.Popen([cmd], stdout=subprocess.PIPE,
                                    stderr=subprocess.PIPE, env=env)
@@ -74,7 +74,9 @@ def main(argv=sys.argv):
         log.info('Completed %s' % fn)
 
     response = {}
-
+    #TODO: Write the stdout/stderr to a single JSON file
+    # with all the output values from the execution of 'config'
+    # Then load the single json file here and read it out to populate the response.
     for output in c.get('outputs') or []:
         output_name = output['name']
         try:

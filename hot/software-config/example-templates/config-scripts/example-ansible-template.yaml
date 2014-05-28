@@ -1,12 +1,9 @@
 ---
 - name: Hello Ansible - quick start
-  hosts: localhost
   connection: local
-  remote_user: ec2-user
-  sudo: yes
 
   tasks:
     - name: Hello touch_file
-      shell: echo {{ ansible_env.FACTER_foo }} >> /tmp/{{ ansible_env.FACTER_bar }}
+      shell: echo {{ foo }} >> /tmp/{{ bar }}
     - name: Hello echo
-      shell: echo "The file /tmp/{{ ansible_env.FACTER_bar }} contains {{ ansible_env.FACTER_foo }}" >> {{ ansible_env.FACTER_heat_outputs_path }}.result
+      shell: echo "The file /tmp/{{ bar }} contains {{ foo }}" >> {{ heat_outputs_path }}.result

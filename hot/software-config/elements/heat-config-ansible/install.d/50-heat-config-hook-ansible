@@ -3,5 +3,5 @@ set -x
 
 SCRIPTDIR=$(dirname $0)
 
-pip install ansible
+install-packages ansible
 install -D -g root -o root -m 0755 ${SCRIPTDIR}/hook-ansible.py /var/lib/heat-config/hooks/ansible
